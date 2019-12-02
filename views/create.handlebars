@@ -1,0 +1,56 @@
+<h1>Create New Review!</h1>
+<article>
+    <form id="form" method="POST" action="/addReview">
+        <p id="err" style="color:red; visibility:hidden; margin-top:0px; margin-bottom:0px">Missing one of: restaurant, rating, review</p>
+        <div class="input-field">
+            <label>Restaurant:</label>
+            <input id="restaurant" type="text" name="restaurant" size="50" placeholder="Restaurant Name">
+        </div>
+         <div class="input-field">
+            <label>Your Name (Leave empty to be anonymous):</label>
+            <input id="user" type="text" name="user" size="50" placeholder="Username">
+        </div>
+        <div class="input-field">
+            <p id="err2" style="color:red; visibility:hidden; margin-top:0px; margin-bottom:0px">Rating must be number between 0 and 10</p>
+            <label>Rating (out of 10)</label>
+            <input id="rating" type="text" name="rating" size="1" placeholder="#">
+        </div>
+        <div class="input-field">
+            <label>Review:</label>
+            <textarea id="text" type="text" name="text" rows="10" placeholder="Wow! The food was ..."></textarea>
+        </div>
+        <div class="input-field">
+            <label>Images (MUST FIT THIS FORMAT EXACTLY: ["url1", "url2", "url3"])</label>
+            <input id="images" type="text" name="images" size="50" placeholder='["https://i.imgur.com/STbTgfO.jpg", "https://i.imgur.com/6e4GSTL.jpg"'>
+        </div>
+        <!-- <button type="submit">Create Review </button> -->
+        <!-- <button>Create Review</button> -->
+        <a style="font-size: 24px; cursor:pointer" onclick="submitForm()">Submit</a>
+    </form>
+</article>
+
+<script>
+function submitForm() {
+  var restaurant = document.getElementById("restaurant").value
+  var user = document.getElementById("user").value
+  var rating = document.getElementById("rating").value
+  var text = document.getElementById("text").value
+  if (user == "") {
+    user = "anonymous"
+  }
+  if (restaurant == "" || rating == "" || text == "") {
+    window.scrollTo(0,0)
+    document.getElementById("err2").style.visibility = "hidden"
+    document.getElementById("err").style.visibility = "visible"
+  } else if (isNaN(parseInt(rating)) || parseInt(rating) < 0 || parseInt(rating) > 10) {
+    window.scrollTo(0,0)
+    document.getElementById("err").style.visibility = "hidden"
+    document.getElementById("err2").style.visibility = "visible"
+  }
+  else {
+    // var rating = document.getElementById("rating").value
+    document.getElementById("form").submit()
+  }
+}
+
+</script>

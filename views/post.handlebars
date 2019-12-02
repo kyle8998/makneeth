@@ -1,0 +1,16 @@
+<div class="title-container">
+    <h1 class="">{{restaurant}}</h1> <i>{{date}}</i> <br> <i>Rating: {{{this.rating}}} / 10</i>
+</div>
+<div class="content">
+  {{{this.user}}} says:
+</br>
+</br>
+  {{{this.text}}}
+</br>
+</br>
+  {{#if this.images}}
+    {{#each this.images as |image|}}
+      <img width="194px" height="194px" src="{{image}}"></img>
+    {{/each}}
+  {{/if}}
+</div>

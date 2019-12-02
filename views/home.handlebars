@@ -1,0 +1,66 @@
+<!-- {{#if tag}} -->
+<!-- <h2>Recent Posts in {{tag}}:</h2>  -->
+<!-- {{else}} -->
+<h2>{{restaurant}} Reviews:</h2>
+<!-- <p onclick="test()">TEST</p> -->
+<input class="searchInput" type="text" id="search" placeholder="Search Restaurant">
+</br>
+<!-- {{/if}} -->
+
+{{#each data}}
+<article id="{{this.id}}">
+	<h2 class="title" style="margin-bottom: 0px"><a href="/restaurant/{{this.restaurant}}">{{this.restaurant}}</a></h2> <i>{{date}}</i> <br> <i>Rating: {{{this.rating}}} / 10</i>
+	<div class="content">
+	    {{{this.user}}} says:
+		</br>
+		</br>
+			{{{this.text}}}
+		</br>
+		</br>
+			{{#if this.images}}
+				{{#each this.images as |image|}}
+					<img width="128px" height="128px" src="{{image}}"></img>
+				{{/each}}
+			{{/if}}
+	</div>
+	<a href="/review/{{this.id}}">See Full Review</a>
+</article>
+<article style="display:none" id="noresults">
+    <h1>No results :(</h1>
+</article>
+{{else}}
+
+<article>
+    <h1>There are no reviews yet. :(</h1>
+    <a href="/create">Write your first review!</a>
+</article>
+{{/each}}
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+		var rawdata = "{{dataString}}"
+		var data = JSON.parse(decodeURIComponent(rawdata))
+    // Catch live changes of input box
+    $('#search').on("keyup input blur cut", function() {
+      var input = document.getElementById("search").value
+      input = input.trim().toLowerCase()
+
+			// Update visiblity
+			var count = 0
+			document.getElementById("noresults").style.display = "none"
+			for (let review of data) {
+				if (input == "") {
+					document.getElementById(review.id).style.display = "block"
+				} else if (review.restaurant.toLowerCase().includes(input)) {
+					document.getElementById(review.id).style.display = "block"
+				} else {
+					document.getElementById(review.id).style.display = "none"
+					count++
+				}
+      }
+
+			if (count == data.length) {
+				document.getElementById("noresults").style.display = "block"
+			}
+    })
+  </script>
