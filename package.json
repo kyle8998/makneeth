@@ -11,9 +11,12 @@
     "license": "ISC",
     "dependencies": {
         "body-parser": "^1.17.1",
+        "dotenv": "^4.0.0",
         "express": "^4.15.2",
         "express-handlebars": "^3.0.0",
         "morgan": "^1.8.1",
-        "underscore": "^1.8.3"
+        "underscore": "^1.8.3",
+        "mongoose": "^4.9.5",
+        "socket.io": "^1.7.3"
     }
 }

@@ -1,0 +1,383 @@
+<script src="/socket.io/socket.io.js"></script>
+<!-- <script src="/video.js"></script> -->
+<!-- <script src="/video.js"><{{!}}/script> -->
+<!-- <link href="public/css/style.css" rel="stylesheet"> -->
+<!-- FUCK HANDLEBARS -->
+<!-- {{#each scripts}}
+  <script type="text/javascript" src="{{script}}"></script>
+{{/each}} -->
+
+<h2>{{video.title}}</h2>
+
+<body class="bg-light" id="Home">
+	<!-- <div id='playerArea'> -->
+			<div class="video" id="player"></div>
+			<!-- <iframe class="video" id="player" allowfullscreen="0" rel="0" width="640" height="360" src="https://www.youtube.com/embed/${video.videoId}?enablejsapi=1" frameborder="1" style="border: solid 4px #37474F"></iframe> -->
+	<!-- </div> -->
+</body>
+
+<script>
+//-------------------------------------------------------------------
+// INIT SOCKET/ROOM
+//-------------------------------------------------------------------
+	var socket = io();
+	host = false
+	var videoId = "{{video.videoId}}"
+	var roomnum = videoId
+
+	// Join room immediately
+		socket.emit('new room', videoId, function(data) {
+				// This should only call back if the client is the host
+				// TODO what is this?
+				// if (data) {
+				// if (!host) {
+				// 		console.log("Host is syncing the new socket!")
+				// 		syncVideo(roomnum)
+				// }
+
+				// Timeout to load player?
+				setTimeout(function () {
+					if (!host) {
+							console.log("Host is syncing the new socket!")
+							syncVideo(roomnum)
+					}
+    }, 10000);
+		});
+
+	//-------------------------------------------------------------------
+	// YOUTUBE PLAYER INIT
+	//-------------------------------------------------------------------
+
+	var tag = document.createElement('script');
+	tag.id = 'iframe-demo';
+	tag.src = 'https://www.youtube.com/iframe_api';
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+	var player;
+
+	var playerStatus = -1;
+
+	function onYouTubeIframeAPIReady() {
+	    player = new YT.Player('player', {
+					videoId: videoId,
+	        playerVars: {
+	            autoplay: 1,
+	            rel: 0,
+	            controls: 1
+	        },
+	        events: {
+	            'onReady': onPlayerReady,
+	            'onStateChange': onPlayerStateChange
+	        }
+
+					// socket.emit('new room', videoId, function(data) {
+					// 		// This should only call back if the client is the host
+					// 		// TODO what is this?
+					// 		// if (data) {
+					// 		if (!host) {
+					// 				console.log("Host is syncing the new socket!")
+					// 				syncVideo(roomnum)
+					// 		}
+					// });
+	    });
+	    // document.getElementById('player').src = document.getElementById('player').src + '&controls=0'
+	    console.log(document.getElementById('player').src)
+	}
+
+	function onPlayerReady(event) {
+	    //document.getElementById('player').style.borderColor = '#FF6D00';
+	    document.getElementById('player').style.borderColor = '#00000000';
+	}
+
+	function changeBorderColor(playerStatus) {
+	    var color;
+	    if (playerStatus == -1) {
+	        color = "#37474F"; // unstarted = gray
+	    } else if (playerStatus == 0) {
+	        color = "#FFFF00"; // ended = yellow
+	    } else if (playerStatus == 1) {
+	        color = "#33691E"; // playing = green
+	    } else if (playerStatus == 2) {
+	        color = "#DD2C00"; // paused = red
+	    } else if (playerStatus == 3) {
+	        color = "#AA00FF"; // buffering = purple
+	    } else if (playerStatus == 5) {
+	        color = "#FF6DOO"; // video cued = orange
+	    }
+	    if (color) {
+	        document.getElementById('player').style.borderColor = color;
+	    }
+	}
+
+	function onPlayerStateChange(event) {
+		// console.log("HELLO")
+		// console.log(event.data)
+	    //changeBorderColor(event.data);
+	    //socket.emit('player status', event.data);
+	    playerStatus = event.data;
+
+	    // Event Listeners
+	    switch (playerStatus) {
+	        case 0:
+	            // Video Ended
+	            // Go to next in queue
+	            if (host) {
+	                playNext(roomnum)
+	            }
+	            break;
+	        case 1:
+	            console.log(host)
+							console.log("case 1")
+	            if (host) {
+	                playOther(roomnum)
+	            } else {
+									// fuck it do nothing
+	                // getHostData(roomnum)
+	            }
+	            break;
+	        case 2:
+	            if (host) {
+	                pauseOther(roomnum)
+	            }
+	            break;
+	        case 3:
+	            var currTime = player.getCurrentTime();
+	            if (host) {
+	                seekOther(roomnum, currTime)
+	                // syncVideo(roomnum)
+	            }
+	            break;
+	    }
+
+	}
+
+	function play() {
+	    if (playerStatus == -1 || playerStatus == 2) {
+	        player.playVideo();
+	    } else {
+	        player.pauseVideo();
+	    }
+	}
+
+	socket.on('get title', function(data, callback) {
+	    var videoId = data.videoId
+	    var user = data.user
+
+	    $.get(
+	        "https://www.googleapis.com/youtube/v3/videos", {
+	            part: 'snippet',
+	            id: videoId,
+	            key: data.api_key
+	        },
+	        function(data) {
+	            // enqueueNotify(user, data.items[0].snippet.title)
+	            socket.emit('notify alerts', {
+	                alert: 0,
+	                user: user,
+	                title: data.items[0].snippet.title
+	            })
+	            // Does a callback and returns title
+	            callback({
+	                videoId: videoId,
+	                title: data.items[0].snippet.title
+	            })
+	        }
+	    )
+	})
+
+	// socket.on('get playlist videos', function(data) {
+	//     var playlistId = data.playlistId
+	//     var user = data.user
+	//
+	//     $.get(
+	//         "https://www.googleapis.com/youtube/v3/playlistItems", {
+	//             part: 'snippet,contentDetails',
+	//             playlistId: playlistId,
+	//             maxResults: '50',
+	//             key: data.api_key
+	//         },
+	//         function(data) {
+	//           // Iterate through all of the playlist videos
+	//           for (let video of data.items) {
+	//             enqueueVideo(roomnum, video.contentDetails.videoId)
+	//           }
+	//         }
+	//     )
+	// })
+
+	//-------------------------------------------------------------------
+	// HOST STUFF
+	//-------------------------------------------------------------------
+
+	socket.on('setHost', function(data) {
+	    notifyfix = true
+	    console.log("You are the new host!")
+	    host = true
+	});
+
+	// This grabs data and calls sync FROM the host
+	socket.on('getData', function(data) {
+	    console.log("Hi im the host, you called?")
+	    socket.emit('sync host', {});
+	});
+	// Calls sync
+	socket.on('syncHost', function(data) {
+	    syncVideo(roomnum)
+	});
+
+	// When the host leaves, the server calls this function on the next socket
+	socket.on('autoHost', function(data) {
+	    changeHost(data.roomnum)
+	})
+
+	//Change the host
+	function changeHost(roomnum) {
+	    if (!host){
+	        socket.emit('change host', {
+	            room: roomnum
+	        });
+	    }
+	}
+
+
+	//-------------------------------------------------------------------
+	// EVENT HANDLING
+	//-------------------------------------------------------------------
+
+	function playOther(roomnum) {
+	    socket.emit('play other', {
+	        room: roomnum
+	    });
+	}
+
+	socket.on('justPlay', function(data) {
+	    console.log("currPlayer")
+      if (playerStatus == -1 || playerStatus == 2) {
+          player.playVideo()
+      }
+	});
+
+	function pauseOther(roomnum) {
+	    socket.emit('pause other', {
+	        room: roomnum
+	    });
+	    //socket.broadcast.to("room-"+roomnum).emit('justPlay');
+	}
+
+	socket.on('justPause', function(data) {
+	    console.log("hiIamPausing!")
+      player.pauseVideo()
+	});
+
+	function seekOther(roomnum, currTime) {
+	    socket.emit('seek other', {
+	        room: roomnum,
+	        time: currTime
+	    });
+	    // socket.emit('getData');
+	}
+
+
+	// Weird for YouTube because there is no built in seek event
+	// It seeks on an buffer event
+	// Only syncs if off by over .2 seconds
+	socket.on('justSeek', function(data) {
+	    console.log("Seeking Event!")
+	    currTime = data.time
+      var clientTime = player.getCurrentTime();
+      if (clientTime < currTime - .2 || clientTime > currTime + .2) {
+          player.seekTo(currTime);
+          // Forces video to play right after seek
+          player.playVideo()
+      }
+	});
+
+	// Needs to grab the next video id and change the video
+	function playNext(roomnum) {
+	    socket.emit('play next', {}, function(data) {
+	        var videoId = data.videoId
+
+	        // IF queue is empty do not try to change
+	        if (videoId !== "QUEUE IS EMPTY") {
+	            // Change the video
+	            socket.emit('change video', {
+	                room: roomnum,
+	                videoId: videoId,
+	                time: 0
+	            })
+	        } else {
+	            playNextAlert()
+	        }
+	    })
+	}
+
+	//-------------------------------------------------------------------
+	// SYNC STUFF
+	//-------------------------------------------------------------------
+
+	function syncVideo(roomnum) {
+	    var currTime = 0
+	    var state
+	    var videoId = videoId
+
+	    // var syncText = document.getElementById("syncbutton")
+	    // console.log(syncText.innerHTML)
+	    // syncText.innerHTML = "<i class=\"fas fa-sync fa-spin\"></i> Sync"
+
+      currTime = player.getCurrentTime();
+      state = playerStatus
+      console.log("I am host and my current time is " + currTime + state)
+
+			socket.emit('sync video', {
+					room: roomnum,
+					time: currTime,
+					state: state,
+					videoId: videoId
+			});
+	}
+
+	socket.on('syncVideoClient', function(data) {
+	    var currTime = data.time
+	    var state = data.state
+	    var videoId = data.videoId
+	    var playerId = data.playerId
+	    console.log("current time is: " + currTime)
+	    console.log("curr vid id: " + videoId + " " + videoId)
+	    console.log("state" + state)
+
+	    // There should no longer be any need to sync a video change
+	    // Video should always be the same
+	    // if (id != videoId){
+	    //     console.log(id == videoId)
+	    //     changeVideoId(roomnum, videoId)
+	    // }
+
+	    // This switchs you to the correct player
+	    // Should only happen when a new socket joins late
+
+	    // Current issue: changePlayer is called asynchronously when we need this function to wait for it to finish
+	    // changeSinglePlayer(playerId)
+	    // currPlayer = playerId
+
+      // This syncs the time and state
+      var clientTime = player.getCurrentTime();
+      player.seekTo(currTime);
+
+      // Sync player state
+      // IF parent player was paused
+      // If state is -1 (unstarted) the video will still start as intended
+      if (state == 2) {
+          console.log("paused?")
+          player.pauseVideo();
+      }
+      // If not paused
+      else {
+				console.log("play")
+          player.playVideo();
+      }
+
+	});
+
+
+</script>
