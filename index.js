@@ -5,6 +5,8 @@ var dataUtil = require("./util");
 var _ = require("underscore");
 var logger = require('morgan');
 var exphbs = require('express-handlebars');
+// SOCKET LOGIC
+var sockets = require('./syncserver');
 
 var app = express();
 
@@ -15,18 +17,45 @@ app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.use('/public', express.static('public'));
 
+// Start syncserver
+var server = require('http').createServer(app);
+sockets.startSocketServer(server);
+
 // dataUtil.restoreOriginalData();
 var _DATA = dataUtil.loadData().reviews;
 
-/* Add whatever endpoints you need! Remember that your API endpoints must
- * have '/api' prepended to them. Please remember that you need at least 5
- * endpoints for the API, and 5 others.
- */
+// CHANGE EVERYTHING BELOW
 
 app.get('/',function(req,res){
   res.render('home',{
     data: _DATA,
     dataString: encodeURIComponent(JSON.stringify(_DATA))
+  });
+})
+
+// Just my testing path
+app.get('/v/test',function(req,res){
+  video = {
+    title: `Workaholic`,
+    videoId: "mrAIqeULUL0",
+    thumbnail: "http://i3.ytimg.com/vi/mrAIqeULUL0/maxresdefault.jpg"
+  }
+  res.render('video',{
+    video: video,
+  });
+})
+
+app.get('/v/:videoId',function(req,res){
+  video = {
+    title: `<Title Here> (vid: ${req.params.videoId})`,
+    // videoId: "4OrCA1OInoo",
+    videoId: req.params.videoId,
+    thumbnail: "http://i3.ytimg.com/vi/4OrCA1OInoo/maxresdefault.jpg"
+  }
+  res.render('video',{
+    // HARDCODED FOR NOW
+    video: video,
+    // scripts: scripts
   });
 })
 
@@ -161,6 +190,6 @@ app.get('/random/review', function(req, res) {
   res.redirect("/review/"+random);
 });
 
-app.listen(3000, function() {
+server.listen(3000, function() {
     console.log('Listening on port 3000!');
 });
