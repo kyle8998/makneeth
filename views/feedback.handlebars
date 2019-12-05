@@ -34,7 +34,7 @@ function submitForm() {
     window.scrollTo(0,0)
     document.getElementById("err2").style.visibility = "hidden"
     document.getElementById("err").style.visibility = "visible"
-  } else if (isNaN(parseInt(rating))) {
+  } else if (isNaN(parseInt(rating)) || parseInt(rating) < 1 || parseInt(rating) > 10) {
     window.scrollTo(0,0)
     document.getElementById("err").style.visibility = "hidden"
     document.getElementById("err2").style.visibility = "visible"
