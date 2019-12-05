@@ -9,21 +9,22 @@
 
 {{#each data}}
 <article id="{{this.id}}">
-	<h2 class="title" style="margin-bottom: 0px"><a href="/restaurant/{{this.restaurant}}">{{this.restaurant}}</a></h2> <i>{{date}}</i> <br> <i>Rating: {{{this.rating}}} / 10</i>
+	<h2 class="title" style="margin-bottom: 0px"><a href="/v/{{this.videoId}}/{{name}}">{{this.name}}</a></h2> <i>{{date}}</i>
 	<div class="content">
-	    {{{this.user}}} says:
+	    {{{this.user}}} 
 		</br>
 		</br>
-			{{{this.text}}}
+			<img src="https://img.youtube.com/vi/{{this.videoId}}/0.jpg"></img>
+
 		</br>
 		</br>
-			{{#if this.images}}
+		{{!-- replace with a thumbnail --}}
+			{{!-- {{#if this.images}}
 				{{#each this.images as |image|}}
 					<img width="128px" height="128px" src="{{image}}"></img>
 				{{/each}}
-			{{/if}}
+			{{/if}} --}}
 	</div>
-	<a href="/review/{{this.id}}">See Full Review</a>
 </article>
 <article style="display:none" id="noresults">
     <h1>No results :(</h1>

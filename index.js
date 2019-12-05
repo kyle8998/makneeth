@@ -39,6 +39,8 @@ var server = require('http').createServer(app);
 sockets.startSocketServer(server);
 
 // dataUtil.restoreOriginalData();
+
+// NAVNEETH change this to be the json data from the DB
 var _DATA = dataUtil.loadData().reviews;
 
 // CHANGE EVERYTHING BELOW
@@ -62,9 +64,9 @@ app.get('/v/test',function(req,res){
   });
 })
 
-app.get('/v/:videoId',function(req,res){
+app.get('/v/:videoId/:name',function(req,res){
   video = {
-    title: `<Title Here> (vid: ${req.params.videoId})`,
+    title: `${req.params.name} (video ID: ${req.params.videoId})`,
     // videoId: "4OrCA1OInoo",
     videoId: req.params.videoId,
     thumbnail: "http://i3.ytimg.com/vi/4OrCA1OInoo/maxresdefault.jpg"
@@ -91,7 +93,7 @@ app.post('/addFeedback', function(req, res) {
     body: req.body.body
   }
 
-  //NAVNEETH: add feedback to database HERE
+  //NAVNEETH: add feedback to database HERE AND TO _DATA
 
   res.redirect("/");
 });
@@ -100,8 +102,8 @@ app.post('/addVideo', function(req, res) {
 
     var currentDate = new Date()
     var url = req.body.url
-    var x = url.indexOf("=")
-    var videoId = url.substring(x , len(url))
+    var x = url.indexOf("=") + 1
+    var videoId = url.substring(x , url.length)
 
     var video = {
       name: req.body.name,
@@ -110,7 +112,10 @@ app.post('/addVideo', function(req, res) {
       comments: [],
     }
 
-    // NAVNEETH: ADD VIDEO TO DATABASE
+    // NAVNEETH: ADD VIDEO TO DATABASE AND TO _DATA
+    _DATA.unshift(video)
+    dataUtil.saveData(_DATA)
+
     res.redirect("/");
 });
 
