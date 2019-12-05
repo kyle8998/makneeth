@@ -63,49 +63,43 @@ app.get("/create", function(req, res) {
     res.render('create');
 });
 
-app.get('/review/:id', function(req, res) {
-    var _id = parseInt(req.params.id);
-    var review = _.findWhere(_DATA, { id: _id });
-    if (!review) return res.render('404');
-    res.render('post', review);
+app.get("/feedback", function(req, res) {
+  res.render('feedback');
 });
 
-app.get('/restaurant/:name', function(req, res) {
-    var name = req.params.name;
-    var reviews = _.where(_DATA, { restaurant: name });
-    if (!reviews) return res.render('404');
-    res.render('home',{
-      data: reviews,
-      restaurant: name,
-    });
+app.post('/addFeedback', function(req, res) {
+
+  var feedback = {
+    name: req.body.name,
+    feedback: req.body.feedback,
+    rating: req.body.rating,
+  }
+
+  //NAVNEETH: add feedback to database HERE
+
+  res.redirect("/");
 });
 
-app.post('/addReview', function(req, res) {
+app.post('/addVideo', function(req, res) {
 
-    var images = []
-    if (req.body.images) {
-      try{
-        images = JSON.parse(req.body.images)
-      } catch(err) {
-        images = []
-      }
-    }
     var currentDate = new Date()
-    var review = {
-      id: _DATA.length+1,
-      restaurant: req.body.restaurant,
-      user: req.body.user,
-      rating: parseInt(req.body.rating),
-      text: req.body.text,
-      images: images,
-      date: currentDate.toDateString()
+    var url = req.body.url
+    var x = url.indexOf("=")
+    var videoId = url.substring(x , len(url))
+
+    var video = {
+      name: req.body.name,
+      videoId: videoId,
+      date: currentDate,
+      comments: [],
     }
 
-    _DATA.unshift(review)
-    dataUtil.saveData(_DATA)
+    // NAVNEETH: ADD VIDEO TO DATABASE
     res.redirect("/");
 });
 
+
+//change to getfeedback
 app.get('/api/getReviews',function(req,res){
   res.send(_DATA)
 })

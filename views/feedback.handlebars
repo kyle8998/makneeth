@@ -1,0 +1,48 @@
+<h1>Create New Review!</h1>
+<article>
+    <form id="form" method="POST" action="/addFeeback">
+        <p id="err" style="color:red; visibility:hidden; margin-top:0px; margin-bottom:0px">Missing Rating</p>
+        <div class="input-field">
+            <label>Your Name:</label>
+            <input id="name" type="text" name="name" size="50" placeholder="Title of your video">
+        </div>
+         <div class="input-field">
+            <label>Feedback:</label>
+            <input id="feedback" type="text" name="feedback" size="50" placeholder="http://youtube.com/...">
+        </div>
+        <div class="input-field">
+            <label>Rating (out of 10):</label>
+            <input id="rating" type="text" name="rating" size="50" placeholder="1-10">
+        </div>
+
+
+        <!-- <button type="submit">Create Review </button> -->
+        <!-- <button>Create Review</button> -->
+        <a style="font-size: 24px; cursor:pointer" onclick="submitForm()">Submit</a>
+    </form>
+</article>
+
+<script>
+function submitForm() {
+  var name = document.getElementById("name").value
+  var feedback = document.getElementById("feedback").value
+  var rating = document.getElementById("rating").value
+  if (name == "") {
+    name = "Anon"
+  }
+  if (rating == "") {
+    window.scrollTo(0,0)
+    document.getElementById("err2").style.visibility = "hidden"
+    document.getElementById("err").style.visibility = "visible"
+  } else if (isNaN(parseInt(rating))) {
+    window.scrollTo(0,0)
+    document.getElementById("err").style.visibility = "hidden"
+    document.getElementById("err2").style.visibility = "visible"
+  }
+  else {
+    // var rating = document.getElementById("rating").value
+    document.getElementById("form").submit()
+  }
+}
+
+</script>
