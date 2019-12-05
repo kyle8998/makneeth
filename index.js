@@ -9,12 +9,19 @@ var exphbs = require('express-handlebars');
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 var dotenv = require('dotenv');
-var Schema = require('./models/Schema');
+var Schema = require('./models/Video');
 var Video = Schema.Video;
 var Feedback = Schema.Feedback;
 // load environment variables
 dotenv.load();
 
+// connect to MongoDB 
+mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connection.on('error', err => {
+    console.log(err);
+    console.log('MongoDB Connection Error. Please make sure that MongoDB is running.');
+    process.exit(1);
+});
 // SOCKET LOGIC
 var sockets = require('./syncserver');
 
@@ -80,9 +87,8 @@ app.get("/feedback", function(req, res) {
 app.post('/addFeedback', function(req, res) {
 
   var feedback = {
-    name: req.body.name,
-    feedback: req.body.feedback,
     rating: req.body.rating,
+    body: req.body.body
   }
 
   //NAVNEETH: add feedback to database HERE
