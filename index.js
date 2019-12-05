@@ -14,6 +14,7 @@ var Video = Schema.Video;
 var Feedback = Schema.Feedback;
 // load environment variables
 dotenv.load();
+
 // SOCKET LOGIC
 var sockets = require('./syncserver');
 
