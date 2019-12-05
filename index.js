@@ -103,7 +103,8 @@ app.post('/addFeedback', function(req, res) {
 
   feedback.save(function(err) {
     if (err) throw err;
-    return res.send('Successfully inserted feedback');
+    console.log('Successfully inserted feedback');
+    return res.redirect("/");
   });
 
   //NAVNEETH: add feedback to database HERE AND TO _DATA
@@ -128,15 +129,14 @@ app.post('/addVideo', function(req, res) {
       if (video.length != 0) return res.send("Page already exists!");
       vid.save(function(err) {
         if (err) throw err;
-        return res.send('Successfully inserted video');
+        console.log("Successfully inserted video");
+        return res.redirect("/");
       });
     });
 
     // NAVNEETH: ADD VIDEO TO DATABASE AND TO _DATA
     // _DATA.unshift(video)
     // dataUtil.saveData(_DATA)
-
-    // res.redirect("/");
 });
 
 
@@ -166,7 +166,7 @@ app.post('/v/:videoId/comment', function(req, res) {
     });
     video.save(function(err) {
       if (err) throw err;
-      return res.send('Successfully inserted comment');
+      return;
     });
   });
 })
