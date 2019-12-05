@@ -148,6 +148,30 @@ app.get('/api/getFeedback',function(req,res){
 
 })
 
+//post comment
+app.post('/v/:videoId/comment', function(req, res) {
+
+  Video.findOne({id: req.params.videoId}, function(err, video) {
+    if (err) throw err;
+    if (!video) return res.send('No video found with that ID.');
+    video.comments.push({
+      name: req.query.name,
+      text: req.query.text
+    });
+    video.save(function(err) {
+      if (err) throw err;
+      return res.send('Successfully inserted comment');
+    });
+  });
+})
+
+app.get('/c/:videoId/comments', function(req, res) {
+  Video.find({id: req.params.videoId}, function(err, video) {
+    if (err) throw err; 
+    res.send(video[0].comments);
+  });
+})
+
 app.post("/api/addReview", function(req, res) {
   // Enforce fields in review
   if (!req.body.restaurant || !req.body.user || !req.body.rating || !req.body.text) {

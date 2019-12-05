@@ -4,7 +4,10 @@ mongoose.Promise = global.Promise;
 var commentSchema = new mongoose.Schema({});
 
 var commentSchema = new mongoose.Schema({
-    comment: {
+    name: {
+        type: String
+    },
+    text: {
         type: String
     }
 });
