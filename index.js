@@ -42,14 +42,25 @@ app.use('/public', express.static('public'));
 var server = require('http').createServer(app);
 sockets.startSocketServer(server);
 
-// dataUtil.restoreOriginalData();
+q =   Video.find({})
 
-// NAVNEETH change this to be the json data from the DB
-var _DATA = dataUtil.loadData().reviews;
+var _DATA = []
+
+q.exec(function(err,videos){
+  if(err)
+     return console.log(err);
+
+  ans = []
+  videos.forEach(function(video){
+     _DATA.push(video);
+  });
+
+});
 
 // CHANGE EVERYTHING BELOW
 
 app.get('/',function(req,res){
+  console.log(_DATA)
   res.render('home',{
     data: _DATA,
     dataString: encodeURIComponent(JSON.stringify(_DATA))
@@ -140,6 +151,8 @@ app.post('/addVideo', function(req, res) {
       if (video.length != 0) return res.send("Page already exists!");
       vid.save(function(err) {
         if (err) throw err;
+
+        _DATA.push(vid)
         console.log("Successfully inserted video");
         return res.redirect("/");
       });
