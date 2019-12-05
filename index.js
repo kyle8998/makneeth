@@ -22,14 +22,15 @@ mongoose.connection.on('error', err => {
     console.log('MongoDB Connection Error. Please make sure that MongoDB is running.');
     process.exit(1);
 });
+
 // SOCKET LOGIC
 var sockets = require('./syncserver');
 
 var app = express();
 
 app.use(logger('dev'));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 app.set('view engine', 'handlebars');
 app.use('/public', express.static('public'));
@@ -88,14 +89,17 @@ app.get("/feedback", function(req, res) {
 
 app.post('/addFeedback', function(req, res) {
 
-  var feedback = {
-    rating: req.body.rating,
-    body: req.body.body
-  }
+  var feedback = new Feedback({
+    rating: req.query.rating,
+    comment: req.query.comment
+  });
+
+  feedback.save(function(err) {
+    if (err) throw err;
+    return res.send('Successfully inserted feedback');
+  })
 
   //NAVNEETH: add feedback to database HERE AND TO _DATA
-
-  res.redirect("/");
 });
 
 app.post('/addVideo', function(req, res) {
@@ -121,8 +125,15 @@ app.post('/addVideo', function(req, res) {
 
 
 //change to getfeedback
-app.get('/api/getReviews',function(req,res){
-  res.send(_DATA)
+app.get('/api/getFeedback',function(req,res){
+
+  Feedback.find({rating: req.query.rating, comment: req.query.comment}, function(err, feedback){
+    console.log('success');
+    if (err) throw err;
+    console.log(feedback);
+    res.send(feedback);
+  });
+
 })
 
 app.post("/api/addReview", function(req, res) {
