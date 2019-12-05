@@ -151,12 +151,15 @@ app.get('/api/getFeedback',function(req,res){
 //post comment
 app.post('/v/:videoId/comment', function(req, res) {
 
+  var currentDate = new Date()
+
   Video.findOne({id: req.params.videoId}, function(err, video) {
     if (err) throw err;
     if (!video) return res.send('No video found with that ID.');
     video.comments.push({
       name: req.query.name,
-      text: req.query.text
+      text: req.query.text,
+      date: currentDate
     });
     video.save(function(err) {
       if (err) throw err;
@@ -165,6 +168,7 @@ app.post('/v/:videoId/comment', function(req, res) {
   });
 })
 
+//get all comments
 app.get('/c/:videoId/comments', function(req, res) {
   Video.find({id: req.params.videoId}, function(err, video) {
     if (err) throw err; 
