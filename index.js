@@ -67,7 +67,7 @@ app.get('/v/test',function(req,res){
 
 app.get('/v/:videoId/:name',function(req,res){
 
-  Video.find({title: req.params.name, id: req.params.videoId}, function(err, video){
+  Video.find({id: req.params.videoId}, function(err, video){
     if (err) throw err;
     outputVid = {
       title: video[0].title,
@@ -109,24 +109,23 @@ app.post('/addFeedback', function(req, res) {
 app.post('/addVideo', function(req, res) {
 
     var currentDate = new Date()
-    var url = req.query.url
+    var url = req.body.url
     var x = url.indexOf("=") + 1
     var videoId = url.substring(x , url.length)
 
-    var video = new Video({
-      title: req.query.title,
+    var vid = new Video({
+      title: req.body.name,
       id: videoId,
       date: currentDate,
       comments: []
     });
 
     Video.find({title: req.query.title, id: videoId}, function(err, video) {
-      if (!err) res.send("Page already exists!");
-      else 
-        video.save(function(err) {
-          if (err) throw err;
-          return res.send('Successfully inserted video');
-        })
+      if (video.length != 0) return res.send("Page already exists!");
+      vid.save(function(err) {
+        if (err) throw err;
+        return res.send('Successfully inserted video');
+      });
     });
 
     // NAVNEETH: ADD VIDEO TO DATABASE AND TO _DATA
