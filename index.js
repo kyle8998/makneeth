@@ -66,17 +66,20 @@ app.get('/v/test',function(req,res){
 })
 
 app.get('/v/:videoId/:name',function(req,res){
-  video = {
-    title: `${req.params.name} (video ID: ${req.params.videoId})`,
-    // videoId: "4OrCA1OInoo",
-    videoId: req.params.videoId,
-    thumbnail: "http://i3.ytimg.com/vi/4OrCA1OInoo/maxresdefault.jpg"
-  }
-  res.render('video',{
-    // HARDCODED FOR NOW
-    video: video,
-    // scripts: scripts
+
+  Video.find({title: req.params.name, id: req.params.videoId}, function(err, video){
+    if (err) throw err;
+    outputVid = {
+      title: video[0].title,
+      videoId: video[0].id,
+      thumbnail: "http://img.youtube.com/vi/${video[0].id}/maxresdefault.jpg"
+    }
+    res.render('video', {
+      video: outputVid,
+    });
+
   });
+
 })
 
 app.get("/create", function(req, res) {
@@ -97,30 +100,40 @@ app.post('/addFeedback', function(req, res) {
   feedback.save(function(err) {
     if (err) throw err;
     return res.send('Successfully inserted feedback');
-  })
+  });
 
   //NAVNEETH: add feedback to database HERE AND TO _DATA
 });
 
+//passing in title, url
 app.post('/addVideo', function(req, res) {
 
     var currentDate = new Date()
-    var url = req.body.url
+    var url = req.query.url
     var x = url.indexOf("=") + 1
     var videoId = url.substring(x , url.length)
 
-    var video = {
-      name: req.body.name,
-      videoId: videoId,
+    var video = new Video({
+      title: req.query.title,
+      id: videoId,
       date: currentDate,
-      comments: [],
-    }
+      comments: []
+    });
+
+    Video.find({title: req.query.title, id: videoId}, function(err, video) {
+      if (!err) res.send("Page already exists!");
+      else 
+        video.save(function(err) {
+          if (err) throw err;
+          return res.send('Successfully inserted video');
+        })
+    });
 
     // NAVNEETH: ADD VIDEO TO DATABASE AND TO _DATA
-    _DATA.unshift(video)
-    dataUtil.saveData(_DATA)
+    // _DATA.unshift(video)
+    // dataUtil.saveData(_DATA)
 
-    res.redirect("/");
+    // res.redirect("/");
 });
 
 
@@ -128,7 +141,6 @@ app.post('/addVideo', function(req, res) {
 app.get('/api/getFeedback',function(req,res){
 
   Feedback.find({rating: req.query.rating, comment: req.query.comment}, function(err, feedback){
-    console.log('success');
     if (err) throw err;
     console.log(feedback);
     res.send(feedback);

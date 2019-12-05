@@ -5,26 +5,29 @@ var commentSchema = new mongoose.Schema({});
 
 var commentSchema = new mongoose.Schema({
     comment: {
-        type: String,
+        type: String
     }
 });
 
 var videoSchema = new mongoose.Schema({
     title: {
-        type: String,
+        type: String
     },
     id: {
-        type: String,
+        type: String
+    },
+    date: {
+        type: Date
     },
     comments: [commentSchema]
 });
 
 var feedbackSchema = new mongoose.Schema({
     rating: {
-        type: Number,
+        type: Number
     },
     comment: {
-        type: String,
+        type: String
     }
 });
 
