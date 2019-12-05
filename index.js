@@ -5,6 +5,16 @@ var dataUtil = require("./util");
 var _ = require("underscore");
 var logger = require('morgan');
 var exphbs = require('express-handlebars');
+// Mongoose/Mongo
+var mongoose = require('mongoose');
+mongoose.Promise = global.Promise;
+var dotenv = require('dotenv');
+var Schema = require('./models/Schema');
+var Video = Schema.Video;
+var Feedback = Schema.Feedback;
+// load environment variables
+dotenv.load();
+
 // SOCKET LOGIC
 var sockets = require('./syncserver');
 
