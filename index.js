@@ -15,7 +15,7 @@ var Feedback = Schema.Feedback;
 // load environment variables
 dotenv.load();
 
-// connect to MongoDB 
+// connect to MongoDB
 mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true});
 mongoose.connection.on('error', err => {
     console.log(err);
@@ -69,6 +69,10 @@ app.get('/v/:videoId/:name',function(req,res){
 
   Video.find({title: req.params.name, id: req.params.videoId}, function(err, video){
     if (err) throw err;
+
+    if (video.length == 0) {
+      return res.render('404', {});
+    }
     outputVid = {
       title: video[0].title,
       videoId: video[0].id,
@@ -122,7 +126,7 @@ app.post('/addVideo', function(req, res) {
 
     Video.find({title: req.query.title, id: videoId}, function(err, video) {
       if (!err) res.send("Page already exists!");
-      else 
+      else
         video.save(function(err) {
           if (err) throw err;
           return res.send('Successfully inserted video');
@@ -171,7 +175,7 @@ app.post('/v/:videoId/comment', function(req, res) {
 //get all comments
 app.get('/c/:videoId/comments', function(req, res) {
   Video.find({id: req.params.videoId}, function(err, video) {
-    if (err) throw err; 
+    if (err) throw err;
     res.send(video[0].comments);
   });
 })
