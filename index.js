@@ -5,6 +5,7 @@ var dataUtil = require("./util");
 var _ = require("underscore");
 var logger = require('morgan');
 var exphbs = require('express-handlebars');
+const request = require('request');
 // Mongoose/Mongo
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
@@ -14,6 +15,8 @@ var Video = Schema.Video;
 var Feedback = Schema.Feedback;
 // load environment variables
 dotenv.load();
+
+YT3_API_KEY = process.env.YT3_API_KEY;
 
 // connect to MongoDB
 mongoose.connect(process.env.MONGODB, { useNewUrlParser: true, useUnifiedTopology: true});
@@ -65,7 +68,7 @@ app.get('/v/test',function(req,res){
   });
 })
 
-app.get('/v/:videoId/:name',function(req,res){
+app.get('/v/:videoId',function(req,res){
 
   Video.find({id: req.params.videoId}, function(err, video){
     if (err) throw err;
@@ -117,26 +120,29 @@ app.post('/addVideo', function(req, res) {
     var x = url.indexOf("=") + 1
     var videoId = url.substring(x , url.length)
 
-    var vid = new Video({
-      title: req.body.name,
-      id: videoId,
-      date: currentDate,
-      comments: []
-    });
+    // Get title
+    request.get({
+      headers: {'content-type' : 'application/x-www-form-urlencoded'},
+      url:     `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${YT3_API_KEY}`,
+    }, function(error, response, body){
+      data = JSON.parse(body)
+      var title = data.items[0].snippet.title
 
-    Video.find({title: req.query.title, id: videoId}, function(err, video) {
-      if (video.length != 0) return res.send("Page already exists!");
-      vid.save(function(err) {
-        if (err) throw err;
-        return res.send('Successfully inserted video');
+      var vid = new Video({
+        title: title,
+        id: videoId,
+        date: currentDate,
+        comments: []
+      });
+
+      Video.find({id: videoId}, function(err, video) {
+        if (video.length != 0) return res.send("Page already exists!");
+        vid.save(function(err) {
+          if (err) throw err;
+          return res.send('Successfully inserted video');
+        });
       });
     });
-
-    // NAVNEETH: ADD VIDEO TO DATABASE AND TO _DATA
-    // _DATA.unshift(video)
-    // dataUtil.saveData(_DATA)
-
-    // res.redirect("/");
 });
 
 
