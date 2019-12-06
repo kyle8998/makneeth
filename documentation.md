@@ -58,7 +58,7 @@ Socket.IO is used as a realtime synchronization tool in our video rooms. There i
 Top Navigation Bar
 1. Home -> `/`
 2. Add a new video! -> `/create`
-2. Add Feedback -> `/feedback`
+3. Add Feedback -> `/feedback`
 
 Navigation Filters
 1. Most Recent -> `/recent`
@@ -70,9 +70,9 @@ Navigation Filters
 
 1. 404 -> `/v/x` where {x} is not an active videoID
 
-### 4. API 
+### 4. API
 
-NAVNEETH AND KYLE PLEASE MAKE SURE U HAVE ALL ENDPOINTS HERE
+NAVNEETH PLEASE MAKE SURE U HAVE ALL ENDPOINTS HERE
 
 *...In addition to the 10 endpoints above...*
 
@@ -125,11 +125,28 @@ POST endpoint route: `/addFeedback`
   });
 ```
 
+DELETE endpoint route: `/deleteVideo`
+
+```javascript
+  var feedback = new Feedback({
+    id: req.body.id,
+  });
+```
+
+DELETE endpoint route: `/deleteComment`
+
+```javascript
+  var feedback = new Feedback({
+    id: req.body.id,
+    index: req.body.index
+  });
+```
+
 ### 5. Modules
 
-syncserver.js - Socket.io fucntionality for syncing video
+syncserver.js - Socket.io functionality for syncing video
 
-titlegrab.js - Pulls the title of the video from youtube api
+titlegrab.js - Pulls the title of the video from youtube v3 data api
 
 ### 6. NPM Packages
 
@@ -138,10 +155,13 @@ request
 is-object
 
 ### 7. UI
+
 Looks good to me
 
 ### 8. Deployment
+
 https://makneeth.herokuapp.com/
 
 ### 9. ReadMe
+
 In README.md

@@ -48,21 +48,26 @@ q =   Video.find({})
 
 var _DATA = []
 
-q.exec(function(err,videos){
-  if(err)
-     return console.log(err);
+function refreshData() {
+  q.exec(function(err,videos){
+    if(err)
+       return console.log(err);
 
-  ans = []
-  videos.forEach(function(video){
-     _DATA.push(video);
+    ans = []
+    videos.forEach(function(video){
+       ans.push(video);
+    });
+    _DATA = ans
   });
+}
 
-});
+refreshData()
 
 // CHANGE EVERYTHING BELOW
 
 app.get('/',function(req,res){
   console.log(_DATA)
+  refreshData()
   res.redirect('/recent')
 })
 
@@ -143,12 +148,12 @@ app.post('/addVideo', function(req, res) {
         date: currentDate,
         comments: []
       });
-  
+
       Video.find({title: req.query.title, id: videoId}, function(err, video) {
         if (video.length != 0) return res.send("Page already exists!");
         vid.save(function(err) {
           if (err) throw err;
-  
+
           _DATA.push(vid)
           console.log("Successfully inserted video");
           return res.redirect("/");
@@ -227,6 +232,7 @@ app.delete('/api/deleteComment', function(req, res) {
 });
 
 app.get('/recent', function(req, res) {
+  refreshData()
   sortedData = JSON.parse(JSON.stringify(_DATA))
   sortedData.sort(function(a, b) {
       return new Date(b.date).getTime() - new Date(a.date).getTime();
@@ -237,6 +243,7 @@ app.get('/recent', function(req, res) {
 });
 
 app.get('/oldest', function(req, res) {
+  refreshData()
   sortedData = JSON.parse(JSON.stringify(_DATA))
   sortedData.sort(function(a, b) {
       return a.rating - b.rating;
@@ -247,6 +254,7 @@ app.get('/oldest', function(req, res) {
 });
 
 app.get('/A-Z', function(req, res) {
+  refreshData()
   sortedData = JSON.parse(JSON.stringify(_DATA))
   sortedData.sort(function(a, b) {
     return (b.title > a.title)?-1 : 1 ;
@@ -257,6 +265,7 @@ app.get('/A-Z', function(req, res) {
 });
 
 app.get('/Z-A', function(req, res) {
+  refreshData()
   sortedData = JSON.parse(JSON.stringify(_DATA))
   sortedData.sort(function(a, b) {
     return (a.title > b.title)? -1 : 1 ;
