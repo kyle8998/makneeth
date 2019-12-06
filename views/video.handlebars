@@ -14,9 +14,49 @@
 			<div class="video" id="player"></div>
 			<!-- <iframe class="video" id="player" allowfullscreen="0" rel="0" width="640" height="360" src="https://www.youtube.com/embed/${video.videoId}?enablejsapi=1" frameborder="1" style="border: solid 4px #37474F"></iframe> -->
 	<!-- </div> -->
+</br>
+	Add a comment
+	<form id="form" method="POST" action="/addComment">
+			<p id="err" style="color:red; visibility:hidden; margin-top:0px; margin-bottom:0px">Missing Url</p>
+			<input style="display:none" value="{{video.videoId}}" id="videoId" type="text" name="videoId" size="50">
+			<div class="input-field">
+				 <label>Name</label>
+				 <input id="name" type="text" name="name" size="50" placeholder="Kyle">
+			</div>
+			 <div class="input-field">
+					<label>Comment</label>
+					<input id="text" type="text" name="text" size="50" placeholder="Wow this video was great!">
+			</div>
+			<a style="font-size: 24px; cursor:pointer" onclick="submitForm()">Submit</a>
+	</form>
+
+</br>
+
+{{#each video.comments}}
+<article>
+	<h4>{{this.name}}</h4>
+	<p>{{this.text}}<p>
+</article>
+{{/each}}
 </body>
 
 <script>
+// comment
+function submitForm() {
+  var name = document.getElementById("name").value
+  var text = document.getElementById("text").value
+
+  if (text == "" || name == "") {
+    return
+  }
+  else {
+    document.getElementById("form").submit()
+		document.getElementById("name").value = ""
+		document.getElementById("text").value = ""
+  }
+}
+
+
 //-------------------------------------------------------------------
 // INIT SOCKET/ROOM
 //-------------------------------------------------------------------
