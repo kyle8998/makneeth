@@ -135,5 +135,8 @@ KYLE
 ### 7. UI
 Looks good to me
 
-### 8. ReadMe
+### 8. Deployment
+https://makneeth.herokuapp.com/
+
+### 9. ReadMe
 In README.md
