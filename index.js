@@ -235,6 +235,26 @@ app.post("/api/addReview", function(req, res) {
   res.json(review)
 });
 
+//delete endpoints for video and comments
+
+app.delete('/api/deleteVideo', function(req, res){
+
+  console.log(req.query.id);
+  Video.findOneAndDelete(req.query.id, function(err, video) {
+    console.log(video);
+    if (err) throw err;
+    if (!video) return res.send('No video found with ID');
+    res.send('Video deleted!');
+  })
+});
+
+app.delete('/api/deleteComment', function(req, res) {
+
+});
+
+
+
+
 app.get('/top', function(req, res) {
   sortedData = JSON.parse(JSON.stringify(_DATA))
   sortedData.sort(function(a, b) {
