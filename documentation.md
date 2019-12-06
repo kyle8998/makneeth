@@ -124,17 +124,19 @@ POST endpoint route: `/addFeedback`
   });
 ```
 
-
 ### 5. Modules
 
-KYLE PLS 
+KYLE PLS - 2 we made
 
 ### 6. NPM Packages
 
-KYLE
+KYLE - 2 new ones
 
 ### 7. UI
 Looks good to me
 
-### 8. ReadMe
+### 8. Deployment
+https://makneeth.herokuapp.com/
+
+### 9. ReadMe
 In README.md
