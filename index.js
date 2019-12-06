@@ -1,11 +1,11 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var fs = require('fs');
-var dataUtil = require("./util");
 var _ = require("underscore");
 var logger = require('morgan');
 var exphbs = require('express-handlebars');
 const request = require('request');
+const isObject = require('is-object');
 // Mongoose/Mongo
 var mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
@@ -28,6 +28,8 @@ mongoose.connection.on('error', err => {
 
 // SOCKET LOGIC
 var sockets = require('./syncserver');
+
+var titlegrab = require('./titlegrab')
 
 var app = express();
 
@@ -129,14 +131,11 @@ app.post('/addVideo', function(req, res) {
     var url = req.body.url
     var x = url.indexOf("=") + 1
     var videoId = url.substring(x , url.length)
+    var title
 
-    // Get title
-    request.get({
-      headers: {'content-type' : 'application/x-www-form-urlencoded'},
-      url:     `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${YT3_API_KEY}`,
-    }, function(error, response, body){
-      data = JSON.parse(body)
-      var title = data.items[0].snippet.title
+
+    titlegrab.getTitle(videoId, function(title){
+
 
       var vid = new Video({
         title: title,
@@ -144,22 +143,19 @@ app.post('/addVideo', function(req, res) {
         date: currentDate,
         comments: []
       });
-
-    Video.find({title: req.query.title, id: videoId}, function(err, video) {
-      if (video.length != 0) return res.send("Page already exists!");
-      vid.save(function(err) {
-        if (err) throw err;
-
-        _DATA.push(vid)
-        console.log("Successfully inserted video");
-        return res.redirect("/");
+  
+      Video.find({title: req.query.title, id: videoId}, function(err, video) {
+        if (video.length != 0) return res.send("Page already exists!");
+        vid.save(function(err) {
+          if (err) throw err;
+  
+          _DATA.push(vid)
+          console.log("Successfully inserted video");
+          return res.redirect("/");
+        });
       });
-    });
+    })
 
-    // NAVNEETH: ADD VIDEO TO DATABASE AND TO _DATA
-    // _DATA.unshift(video)
-    // dataUtil.saveData(_DATA)
-    });
 });
 
 
@@ -189,10 +185,11 @@ app.post('/addComment', function(req, res) {
       text: req.body.text,
       date: currentDate
     });
-    video.save(function(err) {
-      if (err) throw err;
-      return;
-    });
+    if (isObject(video))
+      video.save(function(err) {
+        if (err) throw err;
+        return;
+      });
   });
 })
 
@@ -203,37 +200,6 @@ app.get('/c/:videoId/comments', function(req, res) {
     res.send(video[0].comments);
   });
 })
-
-app.post("/api/addReview", function(req, res) {
-  // Enforce fields in review
-  if (!req.body.restaurant || !req.body.user || !req.body.rating || !req.body.text) {
-    res.send("Missing field in review. Be sure to add restaurant, user, rating, and text.")
-  } else if (isNaN(parseInt(rating)) || parseInt(req.body.rating) < 0 || parseInt(req.body.rating) > 10) {
-    res.send("Rating is not a number between 0 and 10")
-  }
-  var images = []
-  if (req.body.images) {
-    images = JSON.parse(req.body.images)
-  }
-
-  // Get current date
-  var currentDate = new Date()
-  var review = {
-    id: _DATA.length+1,
-    restaurant: req.body.restaurant,
-    user: req.body.user,
-    rating: parseInt(req.body.rating),
-    text: req.body.text,
-    images: images,
-    date: currentDate.toDateString()
-  }
-
-  // Push to datastore
-  _DATA.unshift(review)
-  dataUtil.saveData(_DATA)
-
-  res.json(review)
-});
 
 //delete endpoints for video and comments
 

@@ -29,4 +29,4 @@ This includes the functionality of
 `npm install`
 `node index.js`
 
-go to localhost:3000 in google chrome
+- go to localhost:3000 in google chrome

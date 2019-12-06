@@ -68,11 +68,13 @@ Navigation Filters
 5. Random Video -> `/random`
 6. About -> `/about`
 
+1. 404 -> `/v/x` where {x} is not an active videoID
+
 ### 4. API 
 
 NAVNEETH AND KYLE PLEASE MAKE SURE U HAVE ALL ENDPOINTS HERE
 
-...In addition to the endpoints above... 
+*...In addition to the 10 endpoints above...*
 
 HTML form route: `/create`
 
@@ -114,7 +116,6 @@ POST endpoint route: `/api/addcomment`
     };
 ```
 
-
 POST endpoint route: `/addFeedback`
 
 ```javascript
@@ -128,9 +129,15 @@ POST endpoint route: `/addFeedback`
 
 KYLE PLS - 2 we made
 
+syncserver.js - Socket.io fucntionality for syncing video
+
+titlegrab.js - Pulls the title of the video from youtube api
+
 ### 6. NPM Packages
 
-KYLE - 2 new ones
+request
+
+is-object
 
 ### 7. UI
 Looks good to me
