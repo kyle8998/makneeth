@@ -61,10 +61,7 @@ q.exec(function(err,videos){
 
 app.get('/',function(req,res){
   console.log(_DATA)
-  res.render('home',{
-    data: _DATA,
-    dataString: encodeURIComponent(JSON.stringify(_DATA))
-  });
+  res.redirect('/recent')
 })
 
 // Just my testing path
@@ -252,20 +249,17 @@ app.delete('/api/deleteComment', function(req, res) {
 
 });
 
-
-
-
-app.get('/top', function(req, res) {
+app.get('/recent', function(req, res) {
   sortedData = JSON.parse(JSON.stringify(_DATA))
   sortedData.sort(function(a, b) {
-      return b.rating - a.rating;
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
   })
   res.render('home',{
     data: sortedData,
   });
 });
 
-app.get('/lowest', function(req, res) {
+app.get('/oldest', function(req, res) {
   sortedData = JSON.parse(JSON.stringify(_DATA))
   sortedData.sort(function(a, b) {
       return a.rating - b.rating;
@@ -275,35 +269,38 @@ app.get('/lowest', function(req, res) {
   });
 });
 
-app.get('/today', function(req, res) {
-  var currentDate = new Date().toDateString()
-  var reviews = _.where(_DATA, { date: currentDate });
+app.get('/A-Z', function(req, res) {
+  sortedData = JSON.parse(JSON.stringify(_DATA))
+  sortedData.sort(function(a, b) {
+    return (b.title > a.title)?-1 : 1 ;
+});
   res.render('home',{
-    data: reviews,
+    data: sortedData,
   });
 });
 
-app.get('/random/restaurant', function(req, res) {
-  restaurants = []
-  for (let review of _DATA) {
-    if (!restaurants.includes(review.restaurant)) {
-      restaurants.push(review.restaurant)
-    }
-  }
+app.get('/Z-A', function(req, res) {
+  sortedData = JSON.parse(JSON.stringify(_DATA))
+  sortedData.sort(function(a, b) {
+    return (a.title > b.title)? -1 : 1 ;
+});
+  res.render('home',{
+    data: sortedData,
+  });
+});
 
-  var random = Math.floor(Math.random() * restaurants.length)
-  restaurant = restaurants[random]
+app.get('/random', function(req, res) {
+
+
+  var random = Math.floor(Math.random() * _DATA.length)
+  video = _DATA[random]
 
   // var reviews = _.where(_DATA, { restaurant: restaurant });
-  res.redirect("/restaurant/"+restaurant);
+  res.redirect("/v/"+video.id);
 });
 
-app.get('/random/review', function(req, res) {
-  count = _DATA.length
-  var random = Math.floor(Math.random() * (count)) + 1
-  res.redirect("/review/"+random);
-});
 
-server.listen(3000, function() {
+
+server.listen(process.env.PORT || 3000, function() {
     console.log('Listening on port 3000!');
 });
