@@ -87,7 +87,8 @@ app.get('/v/:videoId',function(req,res){
     outputVid = {
       title: video[0].title,
       videoId: video[0].id,
-      thumbnail: "http://img.youtube.com/vi/${video[0].id}/maxresdefault.jpg"
+      thumbnail: "http://img.youtube.com/vi/${video[0].id}/maxresdefault.jpg",
+      comments: video[0].comments
     }
     res.render('video', {
       video: outputVid,
@@ -174,16 +175,18 @@ app.get('/api/getFeedback',function(req,res){
 })
 
 //post comment
-app.post('/v/:videoId/comment', function(req, res) {
+// app.post('/v/:videoId/comment', function(req, res) {
+app.post('/addComment', function(req, res) {
 
   var currentDate = new Date()
+  console.log(req.body)
 
-  Video.findOne({id: req.params.videoId}, function(err, video) {
+  Video.findOne({id: req.body.videoId}, function(err, video) {
     if (err) throw err;
     if (!video) return res.send('No video found with that ID.');
     video.comments.push({
-      name: req.query.name,
-      text: req.query.text,
+      name: req.body.name,
+      text: req.body.text,
       date: currentDate
     });
     video.save(function(err) {
