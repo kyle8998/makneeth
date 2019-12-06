@@ -312,6 +312,10 @@ app.get('/random', function(req, res) {
   res.redirect("/v/"+video.id);
 });
 
+app.get('/about', function(req, res) {
+  res.render("about");
+});
+
 
 
 server.listen(process.env.PORT || 3000, function() {

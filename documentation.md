@@ -124,7 +124,6 @@ POST endpoint route: `/addFeedback`
   });
 ```
 
-
 ### 5. Modules
 
 KYLE PLS 
