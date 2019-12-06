@@ -1,4 +1,5 @@
 <script src="/socket.io/socket.io.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 <!-- <script src="/video.js"></script> -->
 <!-- <script src="/video.js"><{{!}}/script> -->
 <!-- <link href="public/css/style.css" rel="stylesheet"> -->
@@ -34,7 +35,7 @@
 
 {{#each video.comments}}
 <article>
-	<h4>{{this.name}}</h4>
+	<h4>{{this.name}} <a onclick="deleteComment({{@index}})" style="display:block; text-align:right; color: red; cursor:pointer">Delete</a> </h4>
 	<p>{{this.text}}<p>
 </article>
 {{/each}}
@@ -54,6 +55,21 @@ function submitForm() {
 		document.getElementById("name").value = ""
 		document.getElementById("text").value = ""
   }
+}
+
+function deleteComment(commentId) {
+	data = {
+		id: "{{video.videoId}}",
+		index: commentId
+	}
+	$.ajax({
+  url: '/api/deleteComment',
+  type: 'DELETE',
+  data: data
+})
+  .done(function( data ) {
+    console.log(data);
+  });
 }
 
 

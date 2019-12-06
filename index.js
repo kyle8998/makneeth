@@ -249,13 +249,10 @@ app.delete('/api/deleteVideo', function(req, res){
 });
 
 app.delete('/api/deleteComment', function(req, res) {
-  console.log(req.query.id);
-  console.log(req.query.index);
-  Video.findOne({id: req.query.id}, function(err, video) {
+  Video.findOne({id: req.body.id}, function(err, video) {
     if (err) throw err;
     console.log(video);
-    video.comments.splice(0,1);
-    console.log(video);
+    video.comments.splice(req.body.index,1);
     video.save(function(err) {
       if (err) throw err;
       res.send('Comment deleted!');
