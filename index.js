@@ -298,7 +298,6 @@ app.get('/random', function(req, res) {
   var random = Math.floor(Math.random() * _DATA.length)
   video = _DATA[random]
 
-  // var reviews = _.where(_DATA, { restaurant: restaurant });
   res.redirect("/v/"+video.id);
 });
 

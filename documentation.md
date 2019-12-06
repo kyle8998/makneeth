@@ -49,11 +49,36 @@ Feedback Schema:
 - Comment Schema is a subschema for Video schema
 - Rating is restricted to a number 0-10
 
-### 2. Add New Data
+### 2. Websockets
+
+Socket.IO is used as a realtime synchronization tool in our video rooms. There is one global room per video with a designated host. The server listens for host's events from the youtube api (play/pause/seek) and broadcasts it to everyone else in the room. We maintain a object in `io.sockets.adapter` to keep track of the video metadata, host, room members, etc. On host leave, it autorotates host status to the next available socket. When empty, the room is destroyed. Notification of the host switch can be seen in the console.
+
+### 3. Navigation Pages
+
+Top Navigation Bar
+1. Home -> `/`
+2. Add a new video! -> `/create`
+2. Add Feedback -> `/feedback`
+
+Navigation Filters
+1. Most Recent -> `/recent`
+2. Least Recent -> `/oldest`
+3. Alphabetical -> `/A-Z`
+4. Reverse Alphabetical -> `/Z-A`
+5. Random Video -> `/random`
+6. About -> `/about`
+
+### 4. API 
+
+NAVNEETH AND KYLE PLEASE MAKE SURE U HAVE ALL ENDPOINTS HERE
+
+...In addition to the endpoints above... 
 
 HTML form route: `/create`
 
-POST endpoint route: `/addVideo`
+GET `/api/getFeedback`
+
+POST endpoint route: `/api/addVideo`
 
 Example Node.js POST request to endpoint:
 ```javascript
@@ -77,20 +102,39 @@ request(options, function (error, response, body) {
 });
 ```
 
-### 3. Navigation Pages
+NAVNEETH TODO FIX POST REQUESTS HERE AND THE TWO DELETE AND THE EXTRA GET FOR COMMENTS/FEEDBACK/ETC PLS
 
-Top Navigation Bar
-1. Home -> `/`
-2. Add a new video! -> `/create`
-2. Add Feedback -> `/feedback`
+POST endpoint route: `/api/addcomment`
 
-Navigation Filters
-1. Most Recent -> `/recent`
-2. Least Recent -> `/oldest`
-3. Alphabetical -> `/A-Z`
-4. Reverse Alphabetical -> `/Z-A`
-5. Random Video -> `/random`
+```javascript
+    var comment = {
+      name: req.query.name,
+      text: req.query.text,
+      date: currentDate
+    };
+```
 
-### 4. Websockets
 
-Socket.IO is used as a realtime synchronization tool in our video rooms. There is one global room per video with a designated host. The server listens for host's events from the youtube api (play/pause/seek) and broadcasts it to everyone else in the room. We maintain a object in `io.sockets.adapter` to keep track of the video metadata, host, room members, etc. On host leave, it autorotates host status to the next available socket. When empty, the room is destroyed.
+POST endpoint route: `/addFeedback`
+
+```javascript
+  var feedback = new Feedback({
+    rating: req.query.rating,
+    comment: req.query.comment
+  });
+```
+
+
+### 5. Modules
+
+KYLE PLS 
+
+### 6. NPM Packages
+
+KYLE
+
+### 7. UI
+Looks good to me
+
+### 8. ReadMe
+In README.md
