@@ -109,8 +109,8 @@ app.get("/feedback", function(req, res) {
 app.post('/addFeedback', function(req, res) {
 
   var feedback = new Feedback({
-    rating: req.query.rating,
-    comment: req.query.comment
+    rating: req.body.rating,
+    comment: req.body.comment
   });
 
   feedback.save(function(err) {
@@ -191,7 +191,7 @@ app.post('/addComment', function(req, res) {
     });
     video.save(function(err) {
       if (err) throw err;
-      return;
+      res.redirect('back');
     });
   });
 })
@@ -236,29 +236,24 @@ app.post("/api/addReview", function(req, res) {
 });
 
 //delete endpoints for video and comments
-
 app.delete('/api/deleteVideo', function(req, res){
-
-  console.log(req.query.id);
-  Video.findOneAndDelete(req.query.id, function(err, video) {
+  console.log(req.body.id);
+  Video.findOneAndDelete({id: req.body.id}, function(err, video) {
     console.log(video);
     if (err) throw err;
     if (!video) return res.send('No video found with ID');
-    res.send('Video deleted!');
-  })
+    console.log('Video deleted!');
+  });
+  res.redirect("/");
 });
 
 app.delete('/api/deleteComment', function(req, res) {
-  console.log(req.query.id);
-  console.log(req.query.index);
-  Video.findOne({id: req.query.id}, function(err, video) {
+  Video.findOne({id: req.body.id}, function(err, video) {
     if (err) throw err;
-    console.log(video);
-    video.comments.splice(0,1);
-    console.log(video);
+    video.comments.splice(req.body.index,1);
     video.save(function(err) {
       if (err) throw err;
-      res.send('Comment deleted!');
+      console.log('Comment deleted!');
     });
   });
 });

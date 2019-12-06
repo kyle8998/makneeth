@@ -1,3 +1,5 @@
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
 <!-- {{#if tag}} -->
 <!-- <h2>Recent Posts in {{tag}}:</h2>  -->
 <!-- {{else}} -->
@@ -9,7 +11,8 @@
 
 {{#each data}}
 <article id="{{this.id}}">
-	<h2 class="title" style="margin-bottom: 0px"><a href="/v/{{this.id}}">{{this.title}}</a></h2> </br> <i>{{date}}</i> <a style="display:block; text-align:right; color: red;">Delete</a> 
+	<h2 class="title" style="margin-bottom: 0px"><a href="/v/{{this.id}}">{{this.title}}</a></h2> </br> <i>{{date}}</i> 
+	<a style="display:block; text-align:right; color: red; cursor:pointer" onclick="deleteVideo('{{{this.id}}}')" class="delete" data-target="/" data-method="DELETE" data-disabled="true">Delete</a> 
 	    {{{this.user}}} 
 		</br>
 		</br>
@@ -30,10 +33,31 @@
 {{else}}
 
 <article>
-    <h1>There are no reviews yet. :(</h1>
-    <a href="/create">Write your first review!</a>
+    <h1>There are no videos yet. :(</h1>
+    <a href="/create">Post the first video!</a>
 </article>
 {{/each}}
+
+<script>
+
+	function deleteVideo(videoId) {
+		console.log("test");
+		console.log(videoId);
+		var data = {
+			id: videoId
+		}
+		$.ajax({
+	  		url: '/api/deleteVideo',
+	  		method: 'DELETE',
+	  		data: data
+		})
+	  	.done(function( data ) {
+	    	console.log(data);
+	  	});
+	}
+
+</script>
+
 
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
