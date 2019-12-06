@@ -1,11 +1,5 @@
 <script src="/socket.io/socket.io.js"></script>
-<!-- <script src="/video.js"></script> -->
-<!-- <script src="/video.js"><{{!}}/script> -->
-<!-- <link href="public/css/style.css" rel="stylesheet"> -->
-<!-- FUCK HANDLEBARS -->
-<!-- {{#each scripts}}
-  <script type="text/javascript" src="{{script}}"></script>
-{{/each}} -->
+<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
 
 <h2>{{video.title}}</h2>
 
@@ -34,7 +28,7 @@
 
 {{#each video.comments}}
 <article>
-	<h4>{{this.name}}</h4>
+	<h4>{{this.name}} <a onclick="deleteComment({{@index}})" style="display:block; text-align:right; color: red; cursor:pointer">Delete</a> </h4>
 	<p>{{this.text}}<p>
 
 </article>
@@ -57,6 +51,21 @@ function submitForm() {
   }
 }
 
+function deleteComment(commentId) {
+	data = {
+		id: "{{video.videoId}}",
+		index: commentId
+	}
+	$.ajax({
+  url: '/api/deleteComment',
+  type: 'DELETE',
+  data: data
+})
+  .done(function( data ) {
+    console.log(data);
+  });
+}
+
 
 //-------------------------------------------------------------------
 // INIT SOCKET/ROOM
@@ -69,12 +78,6 @@ function submitForm() {
 	// Join room immediately
 		socket.emit('new room', videoId, function(data) {
 				// This should only call back if the client is the host
-				// TODO what is this?
-				// if (data) {
-				// if (!host) {
-				// 		console.log("Host is syncing the new socket!")
-				// 		syncVideo(roomnum)
-				// }
 
 				// Timeout to load player?
 				setTimeout(function () {
@@ -127,28 +130,7 @@ function submitForm() {
 	}
 
 	function onPlayerReady(event) {
-	    //document.getElementById('player').style.borderColor = '#FF6D00';
 	    document.getElementById('player').style.borderColor = '#00000000';
-	}
-
-	function changeBorderColor(playerStatus) {
-	    var color;
-	    if (playerStatus == -1) {
-	        color = "#37474F"; // unstarted = gray
-	    } else if (playerStatus == 0) {
-	        color = "#FFFF00"; // ended = yellow
-	    } else if (playerStatus == 1) {
-	        color = "#33691E"; // playing = green
-	    } else if (playerStatus == 2) {
-	        color = "#DD2C00"; // paused = red
-	    } else if (playerStatus == 3) {
-	        color = "#AA00FF"; // buffering = purple
-	    } else if (playerStatus == 5) {
-	        color = "#FF6DOO"; // video cued = orange
-	    }
-	    if (color) {
-	        document.getElementById('player').style.borderColor = color;
-	    }
 	}
 
 	function onPlayerStateChange(event) {
@@ -163,9 +145,9 @@ function submitForm() {
 	        case 0:
 	            // Video Ended
 	            // Go to next in queue
-	            if (host) {
-	                playNext(roomnum)
-	            }
+	            // if (host) {
+	            //     playNext(roomnum)
+	            // }
 	            break;
 	        case 1:
 	            console.log(host)
@@ -200,32 +182,6 @@ function submitForm() {
 	        player.pauseVideo();
 	    }
 	}
-
-	socket.on('get title', function(data, callback) {
-	    var videoId = data.videoId
-	    var user = data.user
-
-	    $.get(
-	        "https://www.googleapis.com/youtube/v3/videos", {
-	            part: 'snippet',
-	            id: videoId,
-	            key: data.api_key
-	        },
-	        function(data) {
-	            // enqueueNotify(user, data.items[0].snippet.title)
-	            socket.emit('notify alerts', {
-	                alert: 0,
-	                user: user,
-	                title: data.items[0].snippet.title
-	            })
-	            // Does a callback and returns title
-	            callback({
-	                videoId: videoId,
-	                title: data.items[0].snippet.title
-	            })
-	        }
-	    )
-	})
 
 	// socket.on('get playlist videos', function(data) {
 	//     var playlistId = data.playlistId
@@ -334,24 +290,7 @@ function submitForm() {
       }
 	});
 
-	// Needs to grab the next video id and change the video
-	function playNext(roomnum) {
-	    socket.emit('play next', {}, function(data) {
-	        var videoId = data.videoId
 
-	        // IF queue is empty do not try to change
-	        if (videoId !== "QUEUE IS EMPTY") {
-	            // Change the video
-	            socket.emit('change video', {
-	                room: roomnum,
-	                videoId: videoId,
-	                time: 0
-	            })
-	        } else {
-	            playNextAlert()
-	        }
-	    })
-	}
 
 	//-------------------------------------------------------------------
 	// SYNC STUFF
