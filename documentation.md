@@ -11,6 +11,8 @@ Project Topic: Realtime video sharing and viewing platform
 
 URL: https://makneeth.herokuapp.com/
 
+Github: https://github.com/kyle8998/makneeth/
+
 ---
 
 
@@ -80,7 +82,7 @@ HTML form route: `/create`
 
 GET `/api/getFeedback`
 
-POST endpoint route: `/api/addVideo`
+POST endpoint route: `/addVideo`
 
 Example Node.js POST request to endpoint:
 ```javascript
@@ -104,8 +106,6 @@ request(options, function (error, response, body) {
 });
 ```
 
-NAVNEETH TODO FIX POST REQUESTS HERE AND THE TWO DELETE AND THE EXTRA GET FOR COMMENTS/FEEDBACK/ETC PLS
-
 POST endpoint route: `/api/addcomment`
 
 ```javascript
@@ -128,18 +128,16 @@ POST endpoint route: `/addFeedback`
 DELETE endpoint route: `/deleteVideo`
 
 ```javascript
-  var feedback = new Feedback({
-    id: req.body.id,
-  });
+  { id: req.body.id }
 ```
 
 DELETE endpoint route: `/deleteComment`
 
 ```javascript
-  var feedback = new Feedback({
+  {
     id: req.body.id,
     index: req.body.index
-  });
+  }
 ```
 
 ### 5. Modules
