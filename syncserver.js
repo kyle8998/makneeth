@@ -1,16 +1,5 @@
 // THIS FILE HAS ALL OF THE SOCKET LOGIC
 
-// var express = require('express');
-// var app = express();
-// var bodyParser = require('body-parser');
-// var exphbs = require('express-handlebars');
-// var mongoose = require('mongoose');
-// var dotenv = require('dotenv');
-//
-// var app = express();
-//
-// var server = require('http').createServer(app);
-
 var io = require('socket.io')
 
 module.exports = {
@@ -22,36 +11,6 @@ module.exports = {
     connections = [];
     rooms = [];
     userrooms = {}
-
-    // dotenv.load();
-    //
-    // app.use(bodyParser.json());
-    // app.use(bodyParser.urlencoded({ extended: false }));
-    // app.use('/public', express.static('public'));
-    // app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
-    // app.set('view engine', 'handlebars');
-
-    // mongoose.connect(process.env.MONGODB);
-    // mongoose.connection.on('error', function() {
-    //     console.log('MongoDB Connection Error. Please make sure that MongoDB is running.');
-    //     process.exit(1);
-    // });
-
-    // cant IMPORT SHIT
-    // var scripts = [{ script: '/events.js' }];
-
-    // app.get('/',function(req,res){
-    //   video = {
-    //     title: "I",
-    //     videoId: "4OrCA1OInoo",
-    //     thumbnail: "http://i3.ytimg.com/vi/4OrCA1OInoo/maxresdefault.jpg"
-    //   }
-    //   res.render('video',{
-    //     // HARDCODED FOR NOW
-    //     video: video,
-    //     // scripts: scripts
-    //   });
-    // })
 
     //-------------------------------------------------------------------
     // SOCKETS
@@ -168,34 +127,6 @@ module.exports = {
             if (init) {
                 // Sets the host
                 io.sockets.adapter.rooms['room-' + socket.roomnum].host = host
-                // Default Player
-                // io.sockets.adapter.rooms['room-' + socket.roomnum].currPlayer = 0
-                // Default video
-                // io.sockets.adapter.rooms['room-' + socket.roomnum].currVideo = {
-                //     yt: 'M7lc1UVf-VE',
-                //     dm: 'x26m1j4',
-                //     vimeo: '76979871',
-                //     html5: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-                // }
-                // Previous Video
-                // io.sockets.adapter.rooms['room-' + socket.roomnum].prevVideo = {
-                //     yt: {
-                //         id: 'M7lc1UVf-VE',
-                //         time: 0
-                //     },
-                //     dm: {
-                //         id: 'x26m1j4',
-                //         time: 0
-                //     },
-                //     vimeo: {
-                //         id: '76979871',
-                //         time: 0
-                //     },
-                //     html5: {
-                //         id: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-                //         time: 0
-                //     }
-                // }
                 // Host username
                 io.sockets.adapter.rooms['room-' + socket.roomnum].hostName = socket.username
                 // Keep list of online users
@@ -209,55 +140,6 @@ module.exports = {
                 // }
             }
 
-            // Set Host label
-            // io.sockets.in("room-" + socket.roomnum).emit('changeHostLabel', {
-            //     username: io.sockets.adapter.rooms['room-' + socket.roomnum].hostName
-            // })
-
-            // Set Queue
-            // updateQueueVideos()
-
-            // Gets current video from room variable
-            // switch (io.sockets.adapter.rooms['room-' + socket.roomnum].currPlayer) {
-            //     case 0:
-            //         var currVideo = io.sockets.adapter.rooms['room-' + socket.roomnum].currVideo.yt
-            //         break;
-            //     case 1:
-            //         var currVideo = io.sockets.adapter.rooms['room-' + socket.roomnum].currVideo.dm
-            //         break;
-            //     case 2:
-            //         var currVideo = io.sockets.adapter.rooms['room-' + socket.roomnum].currVideo.vimeo
-            //         break;
-            //     case 3:
-            //         var currVideo = io.sockets.adapter.rooms['room-' + socket.roomnum].currVideo.html5
-            //         break;
-            //     default:
-            //         console.log("Error invalid player id")
-            // }
-            // var currYT = io.sockets.adapter.rooms['room-' + socket.roomnum].currVideo.yt
-
-            // Change the video player to current One
-            // switch (io.sockets.adapter.rooms['room-' + socket.roomnum].currPlayer) {
-            //     case 0:
-            //         // YouTube is default so do nothing
-            //         break;
-            //     case 1:
-            //         io.sockets.in("room-" + socket.roomnum).emit('createDaily', {});
-            //         break;
-            //     case 2:
-            //         io.sockets.in("room-" + socket.roomnum).emit('createVimeo', {});
-            //         break;
-            //     case 3:
-            //         io.sockets.in("room-" + socket.roomnum).emit('createHTML5', {});
-            //         break;
-            //     default:
-            //         console.log("Error invalid player id")
-            // }
-
-            // Change the video to the current one
-            // socket.emit('changeVideoClient', {
-            //     videoId: currVideo
-            // });
 
             // Get time from host which calls change time for that socket
             if (socket.id != host) {
@@ -408,12 +290,6 @@ module.exports = {
             }
         }
       })
-
-
-
-    //server.listen(3000, function() {
-      //  console.log('Listening on port 3000!');
-    //});
 
 
   }
