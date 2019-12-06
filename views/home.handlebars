@@ -1,15 +1,15 @@
 <!-- {{#if tag}} -->
 <!-- <h2>Recent Posts in {{tag}}:</h2>  -->
 <!-- {{else}} -->
-<h2>{{restaurant}} Reviews:</h2>
+{{!-- <h2>{{data.length}} Videos:</h2> --}}
 <!-- <p onclick="test()">TEST</p> -->
-<input class="searchInput" type="text" id="search" placeholder="Search Restaurant">
+{{!-- <input class="searchInput" type="text" id="search" placeholder="Search Restaurant"> --}}
 </br>
 <!-- {{/if}} -->
 
 {{#each data}}
 <article id="{{this.id}}">
-	<h2 class="title" style="margin-bottom: 0px"><a href="/v/{{this.id}}">{{this.title}}</a></h2> </br> <i>{{date}}</i>
+	<h2 class="title" style="margin-bottom: 0px"><a href="/v/{{this.id}}">{{this.title}}</a></h2> </br> <i>{{date}}</i> <a style="display:block; text-align:right; color: red;">Delete</a> 
 	    {{{this.user}}} 
 		</br>
 		</br>
