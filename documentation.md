@@ -127,8 +127,6 @@ POST endpoint route: `/addFeedback`
 
 ### 5. Modules
 
-KYLE PLS - 2 we made
-
 syncserver.js - Socket.io fucntionality for syncing video
 
 titlegrab.js - Pulls the title of the video from youtube api
